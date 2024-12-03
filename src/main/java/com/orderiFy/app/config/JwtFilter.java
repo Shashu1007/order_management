@@ -1,7 +1,7 @@
 package com.orderiFy.app.config;
 
-import com.orderiFy.app.service.JWTService;
-import com.orderiFy.app.service.MyUserDetailService;
+import com.orderiFy.app.authService.JWTService;
+import com.orderiFy.app.authService.MyUserDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
