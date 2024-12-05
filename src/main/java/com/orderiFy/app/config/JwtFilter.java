@@ -2,7 +2,6 @@ package com.orderiFy.app.config;
 
 import com.orderiFy.app.authService.JWTService;
 import com.orderiFy.app.authService.MyUserDetailService;
-import com.orderiFy.app.config.security.TokenBlacklist;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,10 +55,7 @@ public class JwtFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
 
             // Check if the token is blacklisted
-            if (tokenBlacklist.isTokenBlacklisted(token)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token has been blacklisted");
-                return;
-            }
+
 
             username = jwtService.extractUsername(token);
         }
