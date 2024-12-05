@@ -21,13 +21,11 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
-    private final TokenBlacklist tokenBlacklist;
     private final MyUserDetailService myUserDetailService;
 
     @Autowired
-    public JwtFilter(JWTService jwtService, @Lazy TokenBlacklist tokenBlacklist, MyUserDetailService myUserDetailService) {
+    public JwtFilter(JWTService jwtService,  MyUserDetailService myUserDetailService) {
         this.jwtService = jwtService;
-        this.tokenBlacklist = tokenBlacklist;
         this.myUserDetailService = myUserDetailService;
     }
 
