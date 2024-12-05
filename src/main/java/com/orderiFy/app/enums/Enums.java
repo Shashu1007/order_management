@@ -8,9 +8,7 @@ public class Enums {
         COMPLETED,
         PENDING,
         CANCELLED,
-        PROCESSING,
-        SHIPPED,
-        DELIVERED
+
     }
 
     public enum UserRole {

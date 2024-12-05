@@ -8,6 +8,10 @@ import com.orderiFy.app.customerModule.mappers.CustomerMapper;
 import com.orderiFy.app.customerModule.repository.CustomerRepository;
 import com.orderiFy.app.customerModule.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -73,6 +77,19 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setUpdatedAt(LocalDateTime.now());
         customerRepository.save(customer);
     }
+
+
+
+    @Override
+    public Page<CustomerDto> getPaginatedCustomers(String name, String email, int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Customer> customerPage = customerRepository.findByFilters(name, email, pageable);
+
+        return customerPage.map(customerMapper::toDTO);
+    }
+
 
 }
 

@@ -1,10 +1,16 @@
 package com.orderiFy.app.productModule.serviceImpl;
 
+import com.orderiFy.app.customerModule.dto.CustomerDto;
+import com.orderiFy.app.customerModule.entity.Customer;
 import com.orderiFy.app.productModule.dto.ProductDto;
 import com.orderiFy.app.productModule.entity.Product;
 import com.orderiFy.app.productModule.mappers.ProductMapper;
 import com.orderiFy.app.productModule.repository.ProductRepository;
 import com.orderiFy.app.productModule.service.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto getProductById(Long id) {
+    public ProductDto getProductById(long id) {
         return productRepository.findById(id)
                 .map(productMapper::toDTO)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
@@ -45,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto updateProduct(Long id, ProductDto productDto) {
+    public ProductDto updateProduct(long id, ProductDto productDto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         Product updatedProduct = productMapper.toEntity(productDto);
@@ -56,10 +62,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProduct(Long id) {
+    public void deleteProduct(long id) {
         if (!productRepository.existsById(id)) {
             throw new RuntimeException("Product not found");
         }
         productRepository.deleteById(id);
     }
+
+    @Override
+    public Page<ProductDto> getPaginatedProducts(String productName, String productCategory, int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Product> productPage = productRepository.findByFilters(productName, productCategory, pageable);
+
+        return productPage.map(productMapper::toDTO);
+    }
+
+
 }

@@ -24,7 +24,10 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    private Customer customerId;
+
+    @Column(name="order_number" ,nullable= false)
+    private String orderNumber ;
 
     @Column(name = "customer_name", nullable = false)
     private String customerName;
@@ -61,7 +64,7 @@ public class Order {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "orderItemId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItems> orderItems;
 
     @PrePersist
@@ -82,5 +85,10 @@ public class Order {
                 .filter(item -> !item.getIsDeleted())
                 .mapToDouble(OrderItems::getTotalAmount)
                 .sum();
+    }
+
+    public void generateOrderNumber(){
+        this.orderNumber= "OI"+this.orderId;
+
     }
 }

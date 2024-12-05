@@ -7,7 +7,7 @@ import lombok.ToString;
 @ToString
 @Data
 public class ProductDto {
-    private Long productId;
+    private long productId;
     private String productName;
     private String productCategory;
     private Integer stockQuantity;
@@ -15,6 +15,6 @@ public class ProductDto {
     private Double pricePerUnit;
     private String specification;
     private Boolean isDeleted;
-    private Long createdBy;
-    private Long updatedBy;
+    private long createdBy;
+    private long updatedBy;
 }

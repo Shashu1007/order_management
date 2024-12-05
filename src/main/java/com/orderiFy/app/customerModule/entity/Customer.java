@@ -59,8 +59,6 @@ public class Customer {
     @Column(name = "updated_by")
     private Long updatedBy;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> orders;
 
     @PrePersist
     public void onCreate() {

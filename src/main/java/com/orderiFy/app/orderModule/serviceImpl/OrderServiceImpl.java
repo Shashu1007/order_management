@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -75,6 +76,14 @@ public class OrderServiceImpl implements OrderService {
         order.setUpdatedAt(LocalDateTime.now());
 
         orderRepository.save(order);
+    }
+
+    @Override
+    public OrderDto getOrderByIdAndIsDeletedFalse(long id) {
+
+        return orderRepository.findByOrderIdAndIsDeletedFalse(id)
+                .map(orderMapper::toDTO)
+                .orElseThrow(()-> new RuntimeException("Order Not Found With order Id " + id));
     }
 
 }

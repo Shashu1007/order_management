@@ -2,8 +2,7 @@ package com.orderiFy.app.orderModule.controller;
 
 
 
-import
-        com.orderiFy.app.orderModule.dto.OrderDto;
+import com.orderiFy.app.orderModule.dto.OrderDto;
 import com.orderiFy.app.orderModule.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,7 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public OrderDto getOrderById(@PathVariable Long id) {
-        return orderService.getOrderById(id);
+        return orderService.getOrderByIdAndIsDeletedFalse(id);
     }
 
     @GetMapping
@@ -42,7 +41,6 @@ public class OrderController {
     public OrderDto updateOrder(@PathVariable Long id, @RequestBody OrderDto dto) {
         return orderService.updateOrder(id, dto);
     }
-
 
     @DeleteMapping("/{id}")
     public void deleteOrder(@PathVariable Long id) {
