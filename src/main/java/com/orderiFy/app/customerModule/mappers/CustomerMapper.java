@@ -1,35 +1,19 @@
 package com.orderiFy.app.customerModule.mappers;
 
-
 import com.orderiFy.app.customerModule.dto.CustomerDto;
 import com.orderiFy.app.customerModule.entity.Customer;
+import lombok.Builder;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Component;
+@Mapper(componentModel = "spring")
+public interface CustomerMapper {
+    CustomerMapper INSTANCE = Mappers.getMapper(CustomerMapper.class);
 
-import java.time.LocalDate;
+    @Mapping(target = "dob", dateFormat = "dd-MM-yyyy")
+    CustomerDto toDTO(Customer customer);
 
-@Component
-public class CustomerMapper {
-    public CustomerDto toDTO(Customer customer) {
-        CustomerDto dto = new CustomerDto();
-        dto.setId(customer.getCustomerId());
-        dto.setName(customer.getCustomerName());
-        dto.setPhoneNumber(customer.getPhoneNumber());
-        dto.setEmail(customer.getEmail());
-        dto.setAddress(customer.getAddress());
-        dto.setDob(customer.getDob());
-        dto.setIsDeleted(customer.isDeleted());
-        return dto;
-    }
-
-    public Customer toEntity(CustomerDto dto) {
-        Customer customer = new Customer();
-        customer.setCustomerId(dto.getId());
-        customer.setCustomerName(dto.getName());
-        customer.setPhoneNumber(dto.getPhoneNumber());
-        customer.setEmail(dto.getEmail());
-        customer.setAddress(dto.getAddress());
-        customer.setDob(dto.getDob());
-        customer.setDeleted(dto.getIsDeleted());
-        return customer;
-    }
+    @Mapping(target = "dob", dateFormat = "dd-MM-yyyy")
+    Customer toEntity(CustomerDto customerDto);
 }

@@ -33,11 +33,14 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Page<Customer> findByIsDeletedFalse(Pageable pageable);
 
     @Query("SELECT c FROM Customer c WHERE c.isDeleted = false AND " +
-            "(LOWER(c.customerName) LIKE LOWER(CONCAT('%', :name, '%')) OR :name IS NULL) AND " +
+            "(LOWER(c.customerName) LIKE LOWER(CONCAT('%', :customerName, '%')) OR :customerName IS NULL) AND " +
             "(LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%')) OR :email IS NULL)")
-    Page<Customer> findByFilters(@Param("name") String name,
-                                 @Param("email") String email,
-                                 Pageable pageable);
+    Page<Customer> findByFilters(@Param("customerName") String name,
+                                    @Param("email") String email,
+                                    Pageable pageable);
+
+
+
 }
 
 

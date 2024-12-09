@@ -2,21 +2,29 @@ package com.orderiFy.app.productModule.entity;
 
 
 
-import com.orderiFy.app.enums.Enums;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.orderiFy.app.framework.util.Enums;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+
 @Entity
 @Table(name = "products")
+@EntityListeners(AuditingEntityListener.class)
 public class Product {
 
     @Id
@@ -48,15 +56,22 @@ public class Product {
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
     private LocalDateTime createdAt;
 
     @Column(name = "created_by")
-    private long createdBy;
+    private Long createdBy;
+
 
     @Column(name = "updated_at")
+    @LastModifiedDate
+
     private LocalDateTime updatedAt;
 
+    @LastModifiedBy
     @Column(name = "updated_by")
     private long updatedBy;
 }

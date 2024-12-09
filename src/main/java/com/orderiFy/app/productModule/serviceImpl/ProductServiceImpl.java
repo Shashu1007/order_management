@@ -30,35 +30,35 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> getAllProducts() {
         return productRepository.findAll().stream()
-                .map(productMapper::toDTO)
+                .map(productMapper::productToProductDto)
                 .toList();
     }
 
     @Override
     public ProductDto getProductById(long id) {
         return productRepository.findById(id)
-                .map(productMapper::toDTO)
+                .map(productMapper::productToProductDto)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
     @Override
     public ProductDto createProduct(ProductDto productDto) {
-        Product product = productMapper.toEntity(productDto);
+        Product product = productMapper.productDtoToProduct(productDto);
         product.setCreatedAt(LocalDateTime.now());
         product.setUpdatedAt(LocalDateTime.now());
         Product savedProduct = productRepository.save(product);
-        return productMapper.toDTO(savedProduct);
+        return productMapper.productToProductDto(savedProduct);
     }
 
     @Override
     public ProductDto updateProduct(long id, ProductDto productDto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-        Product updatedProduct = productMapper.toEntity(productDto);
+        Product updatedProduct = productMapper.productDtoToProduct(productDto);
         updatedProduct.setProductId(existingProduct.getProductId());
         updatedProduct.setUpdatedAt(LocalDateTime.now());
         Product savedProduct = productRepository.save(updatedProduct);
-        return productMapper.toDTO(savedProduct);
+        return productMapper.productToProductDto(savedProduct);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ProductServiceImpl implements ProductService {
 
         Page<Product> productPage = productRepository.findByFilters(productName, productCategory, pageable);
 
-        return productPage.map(productMapper::toDTO);
+        return productPage.map(productMapper::productToProductDto);
     }
 
 

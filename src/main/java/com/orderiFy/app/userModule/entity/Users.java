@@ -1,7 +1,6 @@
 package com.orderiFy.app.userModule.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.orderiFy.app.enums.Enums;
+import com.orderiFy.app.framework.util.Enums;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

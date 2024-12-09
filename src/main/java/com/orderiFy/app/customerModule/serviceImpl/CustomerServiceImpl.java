@@ -35,7 +35,6 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = customerMapper.toEntity(dto);
 
         Customer savedCustomer = customerRepository.save(customer);
-        savedCustomer.onCreate();
 
         return customerMapper.toDTO(savedCustomer);
     }
@@ -47,36 +46,42 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id : " + id));
     }
 
+    @Override
     public List<CustomerDto> getAllCustomers() {
         return customerRepository.findByIsDeletedFalse().stream()
                 .map(customerMapper::toDTO)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()); // Missing collect
     }
 
     @Override
     public CustomerDto updateCustomer(Long id, CustomerDto dto) {
-        Customer existingCustomer = customerRepository.findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id : "+ id ));
+        try {
+            Customer existingCustomer = customerRepository.findById(id)
+                    .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id : "+ id ));
 
-        // Update fields
-        existingCustomer.setCustomerName(dto.getName());
-        existingCustomer.setPhoneNumber(dto.getPhoneNumber());
-        existingCustomer.setEmail(dto.getEmail());
-        existingCustomer.setAddress(dto.getAddress());
-        existingCustomer.onUpdate();
-        return customerMapper.toDTO(customerRepository.save(existingCustomer));
+            // update customer details
+            existingCustomer.setCustomerName(dto.getCustomerName());
+            existingCustomer.setPhoneNumber(dto.getPhoneNumber());
+            existingCustomer.setEmail(dto.getEmail());
+            existingCustomer.setAddress(dto.getAddress());
+
+            return customerMapper.toDTO(customerRepository.save(existingCustomer));
+        } catch (Exception e) {
+            throw new RuntimeException("Error updating customer", e);
+        }
     }
+
 
     @Override
     public void deleteCustomer(Long id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id : " + id));
 
-        customerRepository.safeDeleteCustomer(id);
-
+        customerRepository.safeDeleteCustomer(id); // Soft delete the customer
         customer.setUpdatedAt(LocalDateTime.now());
-        customerRepository.save(customer);
+        customerRepository.save(customer); // Save the updated entity
     }
+
 
 
 
@@ -92,7 +97,6 @@ public class CustomerServiceImpl implements CustomerService {
 
 
 }
-
 
 
 

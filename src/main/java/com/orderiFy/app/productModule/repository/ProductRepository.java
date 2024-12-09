@@ -17,4 +17,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByFilters(@Param("productName") String productName,
                                 @Param("productCategory") String productCategory,
                                 Pageable pageable);
+
 }

@@ -1,15 +1,15 @@
 package com.orderiFy.app.orderModule.dto;
 
-import com.orderiFy.app.orderModule.entity.Order;
-import com.orderiFy.app.productModule.entity.Product;
-import lombok.Data;
+import lombok.*;
+
 import java.time.LocalDateTime;
+
 
 @Data
 public class OrderItemDto {
     private Long orderItemId;
-    private Order orderId;
-    private Product productId;
+    private Long orderId;  // You can use this or the entire OrderDto
+    private Long productId;  // For the product reference
     private String productName;
     private int quantity;
     private String uom;
@@ -20,4 +20,6 @@ public class OrderItemDto {
     private Long createdBy;
     private LocalDateTime updatedAt;
     private Long updatedBy;
+
+
 }

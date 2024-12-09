@@ -15,14 +15,14 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    Optional<Order> findByOrderIdAndIsDeletedFalse(long id);
+    Optional<Order> findByOrderIdAndIsDeletedFalse(Long id);
 
     List<Order> findByIsDeletedFalse();
 
     @Modifying
     @Transactional
-    @Query("UPDATE Order c SET c.isDeleted = true WHERE c.orderId = :id")
-    void safeDeleteOrder(@Param("id") long id);
+    @Query("UPDATE Order c SET c.isDeleted = true WHERE c.orderId = :orderId")
+    void safeDeleteOrder(@Param("orderId") Long id);
 
 
 

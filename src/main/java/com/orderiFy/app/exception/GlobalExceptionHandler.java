@@ -51,5 +51,11 @@ public class GlobalExceptionHandler {
         body.put("path", request.getDescription(false).substring(4));
 
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
+
+
+
+
+
 }

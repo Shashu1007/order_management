@@ -1,18 +1,24 @@
 package com.orderiFy.app.orderModule.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.orderiFy.app.customerModule.entity.Customer;
-import com.orderiFy.app.enums.Enums.OrderStatus;
+import com.orderiFy.app.framework.util.Enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+
 @Table(name = "orders")
 @ToString
 public class Order {
@@ -24,10 +30,10 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customerId;
+    private Customer customer;
 
-    @Column(name="order_number" ,nullable= false)
-    private String orderNumber ;
+    @Column(name = "order_number", nullable = false, updatable = false)
+    private String orderNumber;
 
     @Column(name = "customer_name", nullable = false)
     private String customerName;
@@ -40,7 +46,6 @@ public class Order {
 
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount = 0.0;
-
 
     @Column(name = "due_date", nullable = false)
     private LocalDateTime dueDate;
@@ -55,40 +60,37 @@ public class Order {
     @Column(name = "created_by", updatable = false)
     private String createdBy;
 
+    @LastModifiedBy
     @Column(name = "updated_by")
     private String updatedBy;
 
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "orderItemId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItems> orderItems;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItems> orderItems = new ArrayList<>();
 
-    @PrePersist
-    public void prePersist() {
-        if (this.createdAt == null) {
-            this.createdAt = LocalDateTime.now();
+
+    @PostPersist
+    public void setOrderNumber() {
+        if (this.orderId != null) {
+            this.orderNumber = "OID" + this.orderId;
         }
     }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
 
     public void calculateTotalAmount() {
         this.totalAmount = this.orderItems.stream()
                 .filter(item -> !item.getIsDeleted())
                 .mapToDouble(OrderItems::getTotalAmount)
                 .sum();
-    }
-
-    public void generateOrderNumber(){
-        this.orderNumber= "OI"+this.orderId;
-
     }
 }

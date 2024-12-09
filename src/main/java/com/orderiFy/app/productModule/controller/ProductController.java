@@ -45,26 +45,22 @@ public class ProductController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // Get all products (non-paginated)
     @GetMapping
     public List<ProductDto> getAllProducts() {
         return productService.getAllProducts();
     }
 
-    // Get product by ID
     @GetMapping("/{id}")
     public ProductDto getProductById(@PathVariable long id) {
         return productService.getProductById(id);
     }
 
-    // Create new product
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProductDto createProduct(@RequestBody ProductDto productDto) {
         return productService.createProduct(productDto);
     }
 
-    // Update product
     @PutMapping("/{id}")
     public ProductDto updateProduct(@PathVariable long id, @RequestBody ProductDto productDto) {
         return productService.updateProduct(id, productDto);

@@ -1,4 +1,4 @@
-package com.orderiFy.app.enums;
+package com.orderiFy.app.framework.util;
 
 public class Enums {
 

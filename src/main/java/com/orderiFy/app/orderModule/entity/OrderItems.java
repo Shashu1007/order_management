@@ -1,11 +1,10 @@
 package com.orderiFy.app.orderModule.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.orderiFy.app.productModule.entity.Product;
 import jakarta.persistence.*;
-
 import lombok.*;
+import org.hibernate.Session;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+
 @Table(name = "order_items")
 @ToString
 public class OrderItems {
@@ -21,11 +20,11 @@ public class OrderItems {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_item_id", nullable = false)
-    private long orderItemId;
+    private Long orderItemId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
-    private Order orderId;
+    private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -44,22 +43,22 @@ public class OrderItems {
     private Double pricePerUnit;
 
     @Column(name = "total_amount", nullable = false)
-    private Double totalAmount;
+    private Double totalAmount = 0.0;
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @Column(name = "created_by")
-    private Long createdBy;
+    private String createdBy;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @Column(name = "updated_by")
-    private Long updatedBy;
+    private String updatedBy;
 
     @PrePersist
     public void prePersist() {

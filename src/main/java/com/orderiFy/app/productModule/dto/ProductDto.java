@@ -1,10 +1,7 @@
 package com.orderiFy.app.productModule.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
-@ToString
 @Data
 public class ProductDto {
     private long productId;
@@ -17,4 +14,6 @@ public class ProductDto {
     private Boolean isDeleted;
     private long createdBy;
     private long updatedBy;
+
+
 }
