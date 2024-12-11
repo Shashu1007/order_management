@@ -12,14 +12,14 @@ public interface ProductService {
 
     List<ProductDto> getAllProducts();
 
-    ProductDto getProductById(long id);
+    ProductDto getProductById(Long id);
 
     ProductDto createProduct(ProductDto productDto);
 
-    ProductDto updateProduct(long id, ProductDto productDto);
+    ProductDto updateProduct(Long id, ProductDto productDto);
 
-    void deleteProduct(long id);
+    void deleteProduct(Long id);
 
-    Page<ProductDto> getPaginatedProducts(String productName, String productCategory, int page, int size, String sortBy, String sortDir) ;
+    Page<ProductDto> getPaginatedProducts(String keyword, int page, int size, String sortBy, String sortDir) ;
 
 }

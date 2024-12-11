@@ -8,11 +8,13 @@ import org.mapstruct.factory.Mappers;
 
 
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring" ,uses =  OrderMapper.class)
 public interface OrderItemsMapper {
 
-    OrderItemDto toDTO(OrderItems orderItem);
+    // Maps OrderItems entity to OrderItemDto
+    OrderItemDto toDTO(OrderItems orderItems);
 
+    // Maps OrderItemDto to OrderItems entity
     OrderItems toEntity(OrderItemDto orderItemDto);
 }
 

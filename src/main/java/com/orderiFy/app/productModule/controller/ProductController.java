@@ -25,14 +25,18 @@ public class ProductController {
     // Get paginated products
     @GetMapping("/paginated")
     public ResponseEntity<Map<String, Object>> getPaginatedProducts(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "productName") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
 
-        Page<ProductDto> productPage = productService.getPaginatedProducts(name, category, page, size, sortBy, sortDir);
+        // If no keyword is provided, it will default to empty string
+        if (keyword == null) {
+            keyword = "";
+        }
+
+        Page<ProductDto> productPage = productService.getPaginatedProducts(keyword, page, size, sortBy, sortDir);
 
         Map<String, Object> response = new HashMap<>();
         response.put("products", productPage.getContent());
@@ -44,14 +48,13 @@ public class ProductController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-    @GetMapping
+    @GetMapping("/")
     public List<ProductDto> getAllProducts() {
         return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
-    public ProductDto getProductById(@PathVariable long id) {
+    public ProductDto getProductById(@PathVariable Long id) {
         return productService.getProductById(id);
     }
 
@@ -62,7 +65,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ProductDto updateProduct(@PathVariable long id, @RequestBody ProductDto productDto) {
+    public ProductDto updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
         return productService.updateProduct(id, productDto);
     }
 

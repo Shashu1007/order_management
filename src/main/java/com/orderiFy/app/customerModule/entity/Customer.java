@@ -63,7 +63,7 @@ public class Customer {
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(name = "updated_at")
-    @LastModifiedDate
+
     private LocalDateTime updatedAt;
 
     @CreatedBy
@@ -71,7 +71,7 @@ public class Customer {
     private Long createdBy;
 
     @Column(name = "updated_by")
-    @LastModifiedBy
+
     private Long updatedBy;
 
 

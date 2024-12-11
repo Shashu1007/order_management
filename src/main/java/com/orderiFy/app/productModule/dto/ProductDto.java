@@ -1,5 +1,6 @@
 package com.orderiFy.app.productModule.dto;
 
+import com.orderiFy.app.framework.util.Enums;
 import lombok.*;
 
 @Data
@@ -8,12 +9,9 @@ public class ProductDto {
     private String productName;
     private String productCategory;
     private Integer stockQuantity;
-    private String uom;
+    private Enums.Uom uom;
     private Double pricePerUnit;
     private String specification;
-    private Boolean isDeleted;
-    private long createdBy;
-    private long updatedBy;
 
 
 }

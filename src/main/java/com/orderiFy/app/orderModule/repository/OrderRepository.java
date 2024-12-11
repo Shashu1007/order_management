@@ -2,6 +2,8 @@ package com.orderiFy.app.orderModule.repository;
 
 import com.orderiFy.app.customerModule.entity.Customer;
 import com.orderiFy.app.orderModule.entity.Order;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,6 +25,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Transactional
     @Query("UPDATE Order c SET c.isDeleted = true WHERE c.orderId = :orderId")
     void safeDeleteOrder(@Param("orderId") Long id);
+
+    @Query("SELECT o FROM Order o WHERE o.isDeleted = false AND (" +
+            "LOWER(o.customerName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(o.orderTakenByUsername) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(o.orderStatus) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<Order> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+
+
 
 
 

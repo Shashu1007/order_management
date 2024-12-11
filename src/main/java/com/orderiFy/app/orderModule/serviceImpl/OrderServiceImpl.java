@@ -8,6 +8,10 @@ import com.orderiFy.app.orderModule.mappers.OrderMapper;
 import com.orderiFy.app.orderModule.repository.OrderRepository;
 import com.orderiFy.app.orderModule.service.OrderService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -47,8 +51,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> getAllOrders() {
-        return orderRepository.findAll().stream().map(orderMapper::toDTO).toList();
+    public Page<OrderDto> getAllOrders(String keyword, int page, int size , String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return orderRepository.findByKeyword(keyword,pageable).map(orderMapper::toDTO);
     }
 
 
@@ -66,16 +72,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void deleteOrder(Long id) {
-
-
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException("Order not found with id : " + id));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id : " + id));
 
-        order.setIsDeleted(true);
-        order.setUpdatedBy(session.getAttribute("username").toString());
+        orderRepository.safeDeleteOrder(id); // Soft delete the order
         order.setUpdatedAt(LocalDateTime.now());
-
         orderRepository.save(order);
+
+
     }
 
     @Override

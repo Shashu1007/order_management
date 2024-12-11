@@ -29,5 +29,5 @@ public interface CustomerService {
     void deleteCustomer(Long id);
 
 
-    Page<CustomerDto> getPaginatedCustomers(String customerName, String email, int page, int size, String sortBy, String sortDir);
+    Page<CustomerDto> getPaginatedCustomers(String keyword, int page, int size, String sortBy, String sortDir);
 }

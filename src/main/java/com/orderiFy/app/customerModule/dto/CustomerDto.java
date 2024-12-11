@@ -13,5 +13,4 @@
         private String email;
         private String address;
         private LocalDate dob;
-        private Boolean isDeleted;
     }

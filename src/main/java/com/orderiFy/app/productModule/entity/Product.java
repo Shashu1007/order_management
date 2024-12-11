@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Entity
 @Table(name = "products")
 @EntityListeners(AuditingEntityListener.class)
@@ -30,7 +29,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
-    private long productId;
+    private Long productId;
 
     @Column(name = "product_name", nullable = false)
     private String productName;
@@ -48,8 +47,6 @@ public class Product {
     @Column(name = "price_per_unit")
     private Double pricePerUnit;
 
-
-
     @Column(name = "specification")
     private String specification;
 
@@ -65,13 +62,10 @@ public class Product {
     @Column(name = "created_by")
     private Long createdBy;
 
-
     @Column(name = "updated_at")
-    @LastModifiedDate
 
     private LocalDateTime updatedAt;
 
-    @LastModifiedBy
     @Column(name = "updated_by")
-    private long updatedBy;
+    private Long updatedBy;
 }

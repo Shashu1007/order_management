@@ -60,7 +60,7 @@ public class Order {
     @Column(name = "created_by", updatable = false)
     private String createdBy;
 
-    @LastModifiedBy
+
     @Column(name = "updated_by")
     private String updatedBy;
 
@@ -73,7 +73,7 @@ public class Order {
     @Column(name = "updated_at")
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-    @LastModifiedDate
+
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

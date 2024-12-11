@@ -86,11 +86,18 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public Page<CustomerDto> getPaginatedCustomers(String name, String email, int page, int size, String sortBy, String sortDir) {
-        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+    public Page<CustomerDto> getPaginatedCustomers(String keyword, int page, int size, String sortBy, String sortDir) {
+        // If keyword is null or empty, pass null to the repository method
+        if (keyword != null && keyword.trim().isEmpty()) {
+            keyword = null;
+        }
+
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Customer> customerPage = customerRepository.findByFilters(name, email, pageable);
+        Page<Customer> customerPage = customerRepository.findByKeyword(keyword, pageable);
 
         return customerPage.map(customerMapper::toDTO);
     }
