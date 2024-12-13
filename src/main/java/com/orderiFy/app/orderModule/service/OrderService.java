@@ -12,10 +12,20 @@ import java.util.Optional;
 @Service
 public interface OrderService {
     OrderDto createOrder(OrderDto dto);
-    OrderDto getOrderById(Long id);
-    Page<OrderDto> getAllOrders(String keyword, int page,int  size,String  sortBy, String sortDir);
+
+
+    Order getOrderById(Long id);
+
+    Page<OrderDto> getAllOrders(String keyword, int page, int  size, String  sortBy, String sortDir);
     OrderDto updateOrder(Long id, OrderDto dto);
     void deleteOrder(Long id);
 
+    String getNextOrderNumber() ;
+    void deleteOrders(List<Long> ids);
+
+
+    Page<OrderDto> findAllOrders(int page, int size,String sortBy,String sortDir);
+
     OrderDto getOrderByIdAndIsDeletedFalse(long id) ;
+
 }

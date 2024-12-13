@@ -3,6 +3,7 @@ package com.orderiFy.app.customerModule.repository;
 import com.orderiFy.app.customerModule.dto.CustomerDto;
 import com.orderiFy.app.customerModule.entity.Customer;
 import com.orderiFy.app.customerModule.mappers.CustomerMapper;
+import com.orderiFy.app.productModule.entity.Product;
 import org.hibernate.type.descriptor.converter.spi.JpaAttributeConverter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,15 +33,14 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     Page<Customer> findByIsDeletedFalse(Pageable pageable);
 
-    @Query("SELECT c FROM Customer c WHERE c.isDeleted = false " +
-            "AND (:keyword IS NULL OR :keyword = '' OR " +
+    @Query("SELECT c FROM Customer c WHERE c.isDeleted = false AND (" +
             "LOWER(c.customerName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(c.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(c.phoneNumber) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(c.address) LIKE LOWER(CONCAT('%', :keyword, '%'))) ")
-    Page<Customer> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
-
-
+            "LOWER(c.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(c.address) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "CAST(c.customerId AS string) LIKE CONCAT('%', :keyword, '%') OR " +
+            "CAST(c.dob AS string) LIKE CONCAT('%', :keyword, '%'))")
+    Page<Customer> findAllCustomers(@Param("keyword") String keyword, Pageable pageable);
 
 }
 

@@ -14,5 +14,10 @@ public interface    OrderItemService {
 
     OrderItemDto createOrderItem(OrderItemDto orderItemDto);
     OrderItemDto updateOrderItem(Long orderItemId, OrderItemDto orderItemDto);
+
+    void deleteOrderItems(List<Long> ids);
+
+
+
     void deleteOrderItem(Long orderItemId);
 }

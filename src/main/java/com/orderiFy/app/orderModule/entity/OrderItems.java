@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 @ToString
 public class OrderItems {
 
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_item_id", nullable = false)
@@ -36,20 +38,20 @@ public class OrderItems {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
-    @Column(name = "uom", nullable = false)
+    @Column(name = "uom")
     private String uom;
 
     @Column(name = "price_per_unit", nullable = false)
-    private Double pricePerUnit;
+    private Double pricePerUnit=0.0;
 
     @Column(name = "total_amount", nullable = false)
-    private Double totalAmount = 0.0;
+    private Double totalAmount  ;
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt=LocalDateTime.now();
 
     @Column(name = "created_by")
     private String createdBy;
@@ -64,6 +66,8 @@ public class OrderItems {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+
 
     @PreUpdate
     public void preUpdate() {
