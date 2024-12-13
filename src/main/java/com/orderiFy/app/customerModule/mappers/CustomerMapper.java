@@ -9,11 +9,10 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Component;
 @Mapper(componentModel = "spring")
 public interface CustomerMapper {
-    CustomerMapper INSTANCE = Mappers.getMapper(CustomerMapper.class);
 
-    @Mapping(target = "dob", dateFormat = "dd-MM-yyyy")
     CustomerDto toDTO(Customer customer);
 
-    @Mapping(target = "dob", dateFormat = "dd-MM-yyyy")
     Customer toEntity(CustomerDto customerDto);
 }
+
+

@@ -26,11 +26,20 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("UPDATE Order c SET c.isDeleted = true WHERE c.orderId = :orderId")
     void safeDeleteOrder(@Param("orderId") Long id);
 
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Order c SET c.isDeleted = true WHERE c.orderId = :orderId")
+    void safeDeleteOrders(@Param("orderId")List<Long> ids);
+
+
     @Query("SELECT o FROM Order o WHERE o.isDeleted = false AND (" +
             "LOWER(o.customerName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(o.orderTakenByUsername) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(o.orderStatus) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     Page<Order> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+
 
 
 

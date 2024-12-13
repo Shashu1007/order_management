@@ -13,9 +13,13 @@ import java.util.Optional;
 public interface OrderService {
     OrderDto createOrder(OrderDto dto);
     OrderDto getOrderById(Long id);
+
     Page<OrderDto> getAllOrders(String keyword, int page,int  size,String  sortBy, String sortDir);
     OrderDto updateOrder(Long id, OrderDto dto);
     void deleteOrder(Long id);
+
+
+    void deleteOrders(List<Long> ids);
 
     OrderDto getOrderByIdAndIsDeletedFalse(long id) ;
 }

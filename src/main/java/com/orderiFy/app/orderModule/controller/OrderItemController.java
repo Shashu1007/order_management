@@ -18,23 +18,31 @@ public class OrderItemController {
         this.orderItemService = orderItemService;
     }
 
-    @GetMapping("/order/{orderId}")
+    @GetMapping("/{orderId}")
     public List<OrderItemDto> getOrderItemsByOrderId(@PathVariable Long orderId) {
         return orderItemService.getOrderItemsByOrderId(orderId);
     }
+
 
     @PostMapping
     public OrderItemDto createOrderItem(@RequestBody OrderItemDto orderItemDto) {
         return orderItemService.createOrderItem(orderItemDto);
     }
 
-    @PutMapping("/{id}")
-    public OrderItemDto updateOrderItem(@PathVariable Long id, @RequestBody OrderItemDto orderItemDto) {
-        return orderItemService.updateOrderItem(id, orderItemDto);
+    @PutMapping("/{orderItemId}")
+    public OrderItemDto updateOrderItem(@PathVariable Long orderItemId, @RequestBody OrderItemDto orderItemDto) {
+        return orderItemService.updateOrderItem(orderItemId, orderItemDto);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteOrderItem(@PathVariable Long id) {
-        orderItemService.deleteOrderItem(id);
+    @DeleteMapping("/{orderItemId}")
+    public void deleteOrderItem(@PathVariable Long orderItemId) {
+        orderItemService.deleteOrderItem(orderItemId);
     }
+
+
+    @DeleteMapping("/")
+    public void deleteOrderItems(@RequestBody List<Long> orderItemIds) {
+        orderItemService.deleteOrderItems(orderItemIds);
+    }
+
 }

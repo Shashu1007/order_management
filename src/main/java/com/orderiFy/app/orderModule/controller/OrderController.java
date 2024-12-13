@@ -24,7 +24,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping
+    @PostMapping("/")
     public OrderDto createOrder(@RequestBody OrderDto dto) {
         return orderService.createOrder(dto);
     }
@@ -33,19 +33,35 @@ public class OrderController {
     public OrderDto getOrderById(@PathVariable Long id) {
         return orderService.getOrderByIdAndIsDeletedFalse(id);
     }
-
     @GetMapping("/paginated")
-    public ResponseEntity<Map<String, Object>> getPaginatedOrders(
+    public ResponseEntity<Map<String, Object>> getPaginatedProducts(
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "orderNumber") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
 
+        // Log parameters
+        System.out.println("Received parameters: ");
+        System.out.println("Keyword: " + keyword);
+        System.out.println("Page: " + page);
+        System.out.println("Size: " + size);
+        System.out.println("SortBy: " + sortBy);
+        System.out.println("SortDir: " + sortDir);
+
+        // If no keyword is provided, it will default to empty string
+        if (keyword == null) {
+            keyword = "";
+        }
+
+
         Page<OrderDto> orderPage = orderService.getAllOrders(keyword, page, size, sortBy, sortDir);
 
+        // Log the results from the service
+        System.out.println("Total orders found: " + orderPage.getTotalElements());
+
         Map<String, Object> response = new HashMap<>();
-        response.put("orders", orderPage.getContent());
+        response.put("products", orderPage.getContent());
         response.put("currentPage", orderPage.getNumber());
         response.put("totalItems", orderPage.getTotalElements());
         response.put("totalPages", orderPage.getTotalPages());
@@ -55,15 +71,28 @@ public class OrderController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
+
     @PutMapping("/{id}")
     public OrderDto updateOrder(@PathVariable Long id, @RequestBody OrderDto dto) {
         return orderService.updateOrder(id, dto);
     }
 
+
+
+
     @DeleteMapping("/{id}")
     public void deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);
     }
+
+
+    @DeleteMapping("/")
+    public void deleteOrders(@RequestBody List<Long> ids) {
+        orderService.deleteOrders(ids);
+    }
+
+
 
 
 }

@@ -39,6 +39,15 @@ public class Enums {
     }
 
 
+    public enum OrderPriority{
+        LOW,
+        MEDIUM,
+
+        HIGH
+
+    }
+
+
 
 
 

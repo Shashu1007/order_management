@@ -2,12 +2,11 @@ package com.orderiFy.app.orderModule.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.orderiFy.app.customerModule.entity.Customer;
-import com.orderiFy.app.framework.util.Enums.OrderStatus;
+import com.orderiFy.app.framework.util.Enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -47,6 +46,10 @@ public class Order {
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount = 0.0;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="order_priority")
+    private OrderPriority orderPriority = OrderPriority.LOW;
+    
     @Column(name = "due_date", nullable = false)
     private LocalDateTime dueDate;
 
@@ -58,11 +61,11 @@ public class Order {
     private Boolean isDeleted = false;
 
     @Column(name = "created_by", updatable = false)
-    private String createdBy;
+    private Long createdBy;
 
 
     @Column(name = "updated_by")
-    private String updatedBy;
+    private Long updatedBy;
 
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
@@ -76,8 +79,6 @@ public class Order {
 
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItems> orderItems = new ArrayList<>();
 
 
     @PostPersist
@@ -87,10 +88,5 @@ public class Order {
         }
     }
 
-    public void calculateTotalAmount() {
-        this.totalAmount = this.orderItems.stream()
-                .filter(item -> !item.getIsDeleted())
-                .mapToDouble(OrderItems::getTotalAmount)
-                .sum();
-    }
+
 }

@@ -1,5 +1,6 @@
 package com.orderiFy.app.orderModule.dto;
 
+import com.orderiFy.app.framework.util.Enums;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,11 +17,10 @@ public class OrderDto {
   private Long orderId;
   private String orderNumber;
   private String customerName;
-  private String orderTakenByUsername;
   private Double totalAmount;
   private LocalDateTime dueDate;
   private String orderStatus;
-  private List<OrderItemDto> orderItems;
+
 
 
 }

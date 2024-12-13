@@ -1,13 +1,11 @@
 package com.orderiFy.app.orderModule.serviceImpl;
 
+import com.orderiFy.app.customerModule.exceptions.CustomerNotFoundException;
 import com.orderiFy.app.exception.ResourceNotFoundException;
-import com.orderiFy.app.orderModule.dto.OrderDto;
 import com.orderiFy.app.orderModule.dto.OrderItemDto;
-import com.orderiFy.app.orderModule.entity.Order;
 import com.orderiFy.app.orderModule.entity.OrderItems;
 import com.orderiFy.app.orderModule.mappers.OrderItemsMapper;
 import com.orderiFy.app.orderModule.repository.OrderItemRepository;
-import com.orderiFy.app.orderModule.repository.OrderRepository;
 import com.orderiFy.app.orderModule.service.OrderItemService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,10 +74,33 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    public void deleteOrderItem(Long orderItemId) {
-        OrderItems orderItems = orderItemRepository.findById(orderItemId)
-                .orElseThrow(() -> new RuntimeException("Order Item not found"));
+    public void deleteOrderItems(List<Long> ids) {
+        // Retrieve the list of orders by the given IDs
+        List<OrderItems> orderItems = orderItemRepository.findAllById(ids);
 
-        orderItemRepository.delete(orderItems);
+        if (orderItems.isEmpty()) {
+            throw new CustomerNotFoundException("No orders found for the provided ids: " + ids);
+        }
+
+        // Soft delete the orders by calling the safeDeleteOrders method
+        orderItemRepository.safeDeleteOrderItems(ids);  // Assuming safeDeleteOrders performs soft delete logic
+
+        // Iterate over the list of orders to update the 'updatedAt' timestamp
+        for (OrderItems orderItem : orderItems) {
+            orderItem.setUpdatedAt(LocalDateTime.now());
+            orderItemRepository.save(orderItem);  // Save the updated timestamp (if required by your logic)
+        }
+    }
+
+
+    @Override
+    public void deleteOrderItem(Long id) {
+        OrderItems orderItem = orderItemRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id : " + id));
+
+        orderItemRepository.safeDeleteOrderItem(id); // Soft delete the order
+        orderItem.setUpdatedAt(LocalDateTime.now());
+        orderItemRepository.save(orderItem);
+
     }
 }

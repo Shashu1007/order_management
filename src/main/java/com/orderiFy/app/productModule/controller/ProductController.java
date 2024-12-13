@@ -51,6 +51,7 @@ public class ProductController {
     @GetMapping("/")
     public List<ProductDto> getAllProducts() {
         return productService.getAllProducts();
+
     }
 
     @GetMapping("/{id}")
@@ -58,7 +59,7 @@ public class ProductController {
         return productService.getProductById(id);
     }
 
-    @PostMapping
+    @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
     public ProductDto createProduct(@RequestBody ProductDto productDto) {
         return productService.createProduct(productDto);

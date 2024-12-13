@@ -23,5 +23,17 @@ public interface OrderItemRepository extends JpaRepository<OrderItems, Long> {
     @Query("SELECT oi FROM OrderItems oi WHERE oi.isDeleted = false AND oi.order.orderId = :orderId")
     List<OrderItems> findAllByOrderIdAndIsDeletedFalse(@Param("orderId") Long id);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE OrderItems c SET c.isDeleted = true WHERE c.orderItemId IN :ids")
+    void safeDeleteOrderItems(@Param("ids") List<Long> ids);
+
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE OrderItems c SET c.isDeleted = true WHERE c.orderItemId = :orderItemId")
+    void safeDeleteOrderItem(@Param("orderItemId") Long id);
+
+
 }
 

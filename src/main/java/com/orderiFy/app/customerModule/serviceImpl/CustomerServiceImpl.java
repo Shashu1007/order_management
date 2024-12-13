@@ -50,7 +50,7 @@ public class CustomerServiceImpl implements CustomerService {
     public List<CustomerDto> getAllCustomers() {
         return customerRepository.findByIsDeletedFalse().stream()
                 .map(customerMapper::toDTO)
-                .collect(Collectors.toList()); // Missing collect
+                .toList();
     }
 
     @Override
@@ -88,16 +88,18 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Page<CustomerDto> getPaginatedCustomers(String keyword, int page, int size, String sortBy, String sortDir) {
         // If keyword is null or empty, pass null to the repository method
-        if (keyword != null && keyword.trim().isEmpty()) {
-            keyword = null;
+        if (keyword != null || keyword.trim().isEmpty()) {
+            keyword = "";
         }
 
-        Sort sort = sortDir.equalsIgnoreCase("asc")
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
+        Sort sort = (sortDir != null && sortDir.equalsIgnoreCase("desc"))
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        // Create pageable object
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Customer> customerPage = customerRepository.findByKeyword(keyword, pageable);
+        Page<Customer> customerPage = customerRepository.findAllCustomers(keyword, pageable);
 
         return customerPage.map(customerMapper::toDTO);
     }

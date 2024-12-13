@@ -33,9 +33,10 @@
                 @RequestParam(defaultValue = "customerName") String sortBy,
                 @RequestParam(defaultValue = "asc") String sortDir) {
 
-            if (keyword != null && keyword.trim().isEmpty()) {
-                keyword = null;
+            if (keyword == null) {
+                keyword = "";
             }
+
             Page<CustomerDto> customerPage = customerService.getPaginatedCustomers(keyword, page, size, sortBy, sortDir);
 
             Map<String, Object> response = new HashMap<>();
