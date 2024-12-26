@@ -31,14 +31,14 @@ public class Product {
     @Column(name = "product_id")
     private Long productId;
 
-    @Column(name = "product_name", nullable = false)
+    @Column(name = "product_name")
     private String productName;
 
     @Column(name = "product_category")
     private String productCategory;
 
-    @Column(name = "stock_quantity", nullable = false)
-    private Integer stockQuantity;
+    @Column(name = "stock_quantity")
+    private Integer stockQuantity ;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "uom")
@@ -68,4 +68,6 @@ public class Product {
 
     @Column(name = "updated_by")
     private Long updatedBy;
+
+
 }

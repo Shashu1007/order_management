@@ -5,19 +5,26 @@ import com.orderiFy.app.productModule.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Session;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+
+
+
+
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder
 @Table(name = "order_items")
-@ToString
+@ToString(exclude = {"order"})
+@EntityListeners(AuditingEntityListener.class)
 public class OrderItems {
-
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +39,6 @@ public class OrderItems {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(name = "product_name", nullable = false)
-    private String productName;
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
@@ -41,22 +46,26 @@ public class OrderItems {
     @Column(name = "uom")
     private String uom;
 
-    @Column(name = "price_per_unit", nullable = false)
-    private Double pricePerUnit=0.0;
+    @Column(name = "price_per_unit")
+    private Double pricePerUnit;
 
-    @Column(name = "total_amount", nullable = false)
-    private Double totalAmount  ;
+    @Column(name = "total_amount")
+    private Double totalAmount;
 
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = false;
+    @Column(name = "is_deleted")
+    private Boolean isDeleted=false;
 
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt=LocalDateTime.now();
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime createdAt;
 
     @Column(name = "created_by")
     private String createdBy;
 
     @Column(name = "updated_at")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
     @Column(name = "updated_by")
@@ -66,8 +75,6 @@ public class OrderItems {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
-
-
 
     @PreUpdate
     public void preUpdate() {

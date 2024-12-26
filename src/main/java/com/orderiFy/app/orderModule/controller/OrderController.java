@@ -1,9 +1,10 @@
 package com.orderiFy.app.orderModule.controller;
 
+import com.orderiFy.app.customerModule.entity.Customer;
+import com.orderiFy.app.customerModule.service.CustomerService;
 import com.orderiFy.app.framework.global.selections.SelectOptionDto;
 import com.orderiFy.app.orderModule.dto.OrderDto;
 import com.orderiFy.app.orderModule.entity.Order;
-import com.orderiFy.app.orderModule.mappers.OrderMapper;
 import com.orderiFy.app.orderModule.service.OrderService;
 import org.hibernate.internal.build.AllowPrintStacktrace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,24 +23,34 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    private final CustomerService customerService;
+
     @Autowired
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService,CustomerService customerService) {
         this.orderService = orderService;
+        this.customerService = customerService;
+
+
     }
 
 
 
 
+    @PostMapping("/createOrder")
+    public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto orderDto) {
+        // Create the order and order items dynamically in the service
+        OrderDto savedOrder = orderService.createOrder(orderDto);
 
-    @PostMapping("/")
-    public OrderDto createOrder(@RequestBody OrderDto dto) {
-        return orderService.createOrder(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedOrder);
     }
+
+
 
     @GetMapping("/{id}")
     public OrderDto getOrderById(@PathVariable Long id) {
         return orderService.getOrderByIdAndIsDeletedFalse(id);
     }
+
 
     @GetMapping("/")
     public ResponseEntity<Map<String, Object>> getAll(
@@ -48,21 +59,7 @@ public class OrderController {
             @RequestParam(defaultValue = "orderNumber") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
 
-        // Log parameters
-        System.out.println("Received parameters: ");
-        System.out.println("Page: " + page);
-        System.out.println("Size: " + size);
-        System.out.println("SortBy: " + sortBy);
-        System.out.println("SortDir: " + sortDir);
-
-        // If no keyword is provided, it will default to empty string
-
-
-
-        Page<OrderDto> orderPage = orderService.findAllOrders( page, size, sortBy, sortDir);
-
-        // Log the results from the service
-        System.out.println("Total orders found: " + orderPage.getTotalElements());
+        Page<OrderDto> orderPage = orderService.findAllOrders(page, size, sortBy, sortDir);
 
         Map<String, Object> response = new HashMap<>();
         response.put("orders", orderPage.getContent());
@@ -86,27 +83,7 @@ public class OrderController {
             @RequestParam(defaultValue = "orderNumber") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
 
-        // Log parameters
-        System.out.println("Received parameters: ");
-        System.out.println("Keyword: " + keyword);
-        System.out.println("Page: " + page);
-        System.out.println("Size: " + size);
-        System.out.println("SortBy: " + sortBy);
-        System.out.println("SortDir: " + sortDir);
-
-        // If no keyword is provided, it will default to empty string
-        if (keyword == null || keyword.trim().isEmpty()) {
-            keyword = "";
-        }
-        else {
-            keyword=keyword.trim();
-        }
-
-
         Page<OrderDto> orderPage = orderService.getAllOrders(keyword, page, size, sortBy, sortDir);
-
-        // Log the results from the service
-        System.out.println("Total orders found: " + orderPage.getTotalElements());
 
         Map<String, Object> response = new HashMap<>();
         response.put("orders", orderPage.getContent());
@@ -140,16 +117,19 @@ public class OrderController {
         orderService.deleteOrders(ids);
     }
 
-    @GetMapping("/newOrder")
-    public ResponseEntity<String> getNextOrderNumber(){
-        String nextOrderNumber = orderService.getNextOrderNumber();
-        return ResponseEntity.ok(nextOrderNumber);
-    }
+
 
     @GetMapping("/getByOrderId/{id}")
         public Order getById(@PathVariable Long id){
             return orderService.getOrderById(id);
 
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception ex) {
+        // Log the error
+        ex.printStackTrace();
+        return new ResponseEntity<>("An error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 

@@ -1,8 +1,6 @@
 package com.orderiFy.app.productModule.controller;
 
-import com.orderiFy.app.customerModule.dto.CustomerDto;
 import com.orderiFy.app.productModule.dto.ProductDto;
-import com.orderiFy.app.productModule.entity.Product;
 import com.orderiFy.app.productModule.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -31,9 +30,10 @@ public class ProductController {
             @RequestParam(defaultValue = "productName") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
 
-        // If no keyword is provided, it will default to empty string
-        if (keyword == null) {
+        if (keyword == null || keyword.trim().isEmpty()) {
             keyword = "";
+        } else {
+            keyword = keyword.trim();
         }
 
         Page<ProductDto> productPage = productService.getPaginatedProducts(keyword, page, size, sortBy, sortDir);
@@ -48,26 +48,33 @@ public class ProductController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @GetMapping("/")
-    public List<ProductDto> getAllProducts() {
-        return productService.getAllProducts();
 
+    // Get all products
+    @GetMapping
+    public ResponseEntity<List<ProductDto>> getAllProducts() {
+        List<ProductDto> products = productService.getAllProducts();
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
+    // Get product by ID
     @GetMapping("/{id}")
-    public ProductDto getProductById(@PathVariable Long id) {
-        return productService.getProductById(id);
+    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
+        ProductDto product = productService.getProductById(id);
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @PostMapping("/")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ProductDto createProduct(@RequestBody ProductDto productDto) {
-        return productService.createProduct(productDto);
+    // Create product
+    @PostMapping
+    public ResponseEntity<ProductDto> createProduct( @RequestBody ProductDto productDto) {
+        ProductDto createdProduct = productService.createProduct(productDto);
+        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
+    // Update product
     @PutMapping("/{id}")
-    public ProductDto updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
-        return productService.updateProduct(id, productDto);
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id,  @RequestBody ProductDto productDto) {
+        ProductDto updatedProduct = productService.updateProduct(id, productDto);
+        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
     // Delete product
@@ -75,5 +82,11 @@ public class ProductController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
+    }
+
+    // Handle product not found exception
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleProductNotFoundException(RuntimeException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

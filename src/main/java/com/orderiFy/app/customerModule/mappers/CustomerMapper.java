@@ -2,19 +2,40 @@ package com.orderiFy.app.customerModule.mappers;
 
 import com.orderiFy.app.customerModule.dto.CustomerDto;
 import com.orderiFy.app.customerModule.entity.Customer;
-import com.orderiFy.app.productModule.mappers.ProductMapper;
-import lombok.Builder;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Component;
-@Mapper(componentModel = "spring")
-public interface CustomerMapper {
 
+@Component
+public class CustomerMapper {
 
-    CustomerDto toDTO(Customer customer);
+    public CustomerDto toDTO(Customer customer) {
+        if (customer == null) {
+            return null;
+        }
 
-    Customer toEntity(CustomerDto customerDto);
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setCustomerId(customer.getCustomerId());
+        customerDto.setCustomerName(customer.getCustomerName());
+        customerDto.setPhoneNumber(customer.getPhoneNumber());
+        customerDto.setEmail(customer.getEmail());
+        customerDto.setAddress(customer.getAddress());
+        customerDto.setDob(customer.getDob());
+
+        return customerDto;
+    }
+
+    public Customer toEntity(CustomerDto customerDto) {
+        if (customerDto == null) {
+            return null;
+        }
+
+        Customer customer = new Customer();
+        customer.setCustomerId(customerDto.getCustomerId());
+        customer.setCustomerName(customerDto.getCustomerName());
+        customer.setPhoneNumber(customerDto.getPhoneNumber());
+        customer.setEmail(customerDto.getEmail());
+        customer.setAddress(customerDto.getAddress());
+        customer.setDob(customerDto.getDob());
+
+        return customer;
+    }
 }
-
-

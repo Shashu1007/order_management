@@ -2,6 +2,8 @@
 
 
     import java.time.LocalDate;
+
+    import com.fasterxml.jackson.annotation.JsonFormat;
     import lombok.Data;
 
 
@@ -12,5 +14,6 @@
         private String phoneNumber;
         private String email;
         private String address;
+        @JsonFormat(pattern = "dd-MM-yyyy")
         private LocalDate dob;
     }

@@ -20,7 +20,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Optional<Order> findByOrderIdAndIsDeletedFalse(Long id);
 
-    List<Order> findByIsDeletedFalse();
+//    List<Order> findByIsDeletedFalse();
 
 
     //safe delete single order by id
@@ -52,7 +52,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     //all fields keyword search
     @Query("SELECT o FROM Order o WHERE o.isDeleted = false AND (" +
-            "LOWER(o.customerName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+
             "LOWER(o.orderStatus) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(o.orderNumber) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(FUNCTION('DATE_FORMAT', o.orderTakenDate, '%Y-%m-%d')) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
@@ -60,8 +60,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "LOWER(FUNCTION('DATE_FORMAT', o.dueDate, '%Y-%m-%d')) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     Page<Order> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
-    @Query("SELECT orderNumber FROM Order o ORDER BY o.createdAt DESC Limit 1")
-    Optional<Order> findLatestOrder();
 
 
     @Query("SELECT o from Order o Where o.isDeleted = false ")

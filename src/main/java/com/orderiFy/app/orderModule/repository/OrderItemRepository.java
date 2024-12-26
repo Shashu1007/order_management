@@ -1,5 +1,6 @@
 package com.orderiFy.app.orderModule.repository;
 
+import com.orderiFy.app.orderModule.dto.OrderItemDto;
 import com.orderiFy.app.orderModule.entity.Order;
 import com.orderiFy.app.orderModule.entity.OrderItems;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,25 +16,23 @@ import java.util.Optional;
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItems, Long> {
 
-    // Fixing the query to correctly use JPQL syntax
+    // Fix the query to return OrderItems instead of OrderItemDto
     @Query("SELECT oi FROM OrderItems oi WHERE oi.isDeleted = false AND oi.orderItemId = :orderItemId")
     Optional<OrderItems> findByOrderItemIdAndIsDeletedFalse(@Param("orderItemId") Long id);
 
-    // Fixing the query to reference order.orderId, since orderId is in the Order entity
+    // Fix the query to return OrderItems instead of OrderItemDto
     @Query("SELECT oi FROM OrderItems oi WHERE oi.isDeleted = false AND oi.order.orderId = :orderId")
     List<OrderItems> findAllByOrderIdAndIsDeletedFalse(@Param("orderId") Long id);
 
     @Modifying
     @Transactional
-    @Query("UPDATE OrderItems c SET c.isDeleted = true WHERE c.orderItemId IN :ids")
-    void safeDeleteOrderItems(@Param("ids") List<Long> ids);
-
+    @Query("UPDATE OrderItems c SET c.isDeleted = true WHERE c.orderItemId = :orderItemId")
+    void safeDeleteOrderItem(@Param("orderItemId") Long orderItemId);
 
     @Modifying
     @Transactional
-    @Query("UPDATE OrderItems c SET c.isDeleted = true WHERE c.orderItemId = :orderItemId")
-    void safeDeleteOrderItem(@Param("orderItemId") Long id);
-
-
+    @Query("UPDATE OrderItems c SET c.isDeleted = true WHERE c.orderItemId IN :ids")
+    void safeDeleteOrderItems(@Param("ids") List<Long> ids);
 }
+
 

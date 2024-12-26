@@ -1,17 +1,20 @@
 package com.orderiFy.app.orderModule.serviceImpl;
 
-import com.orderiFy.app.customerModule.exceptions.CustomerNotFoundException;
 import com.orderiFy.app.exception.ResourceNotFoundException;
 import com.orderiFy.app.orderModule.dto.OrderItemDto;
+import com.orderiFy.app.orderModule.entity.Order;
 import com.orderiFy.app.orderModule.entity.OrderItems;
+import com.orderiFy.app.productModule.dto.ProductDto;
+import com.orderiFy.app.productModule.entity.Product;
+import com.orderiFy.app.productModule.repository.ProductRepository;
 import com.orderiFy.app.orderModule.mappers.OrderItemsMapper;
 import com.orderiFy.app.orderModule.repository.OrderItemRepository;
+import com.orderiFy.app.orderModule.repository.OrderRepository;
 import com.orderiFy.app.orderModule.service.OrderItemService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,87 +23,137 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     private final OrderItemRepository orderItemRepository;
     private final OrderItemsMapper orderItemsMapper;
-    private final HttpSession session;
-
-
-
+    private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
     @Autowired
-    public OrderItemServiceImpl(OrderItemRepository orderItemRepository, OrderItemsMapper orderItemsMapper, HttpSession session) {
+    public OrderItemServiceImpl(OrderItemRepository orderItemRepository,
+                                OrderItemsMapper orderItemsMapper,
+                                ProductRepository productRepository,
+                                OrderRepository orderRepository) {
         this.orderItemRepository = orderItemRepository;
         this.orderItemsMapper = orderItemsMapper;
-        this.session = session;
+        this.productRepository = productRepository;
+        this.orderRepository = orderRepository;
     }
-
-
-
 
     @Override
     public List<OrderItemDto> getOrderItemsByOrderId(Long orderId) {
-        return orderItemRepository.findAllByOrderIdAndIsDeletedFalse(orderId)
-                .stream()
+        List<OrderItems> orderItemsList = orderItemRepository.findAllByOrderIdAndIsDeletedFalse(orderId);
+        return orderItemsList.stream()
                 .map(orderItemsMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public OrderItemDto GetOrderItemById(Long orderItemId){
-        return orderItemRepository.findByOrderItemIdAndIsDeletedFalse(orderItemId)
-                .map(orderItemsMapper::toDTO)
-                .orElseThrow(()->new ResourceNotFoundException("Order Item Not Found With The Id " + orderItemId ));
-
-    }
-
-
-    @Override
-    public OrderItemDto createOrderItem(OrderItemDto orderItemDto) {
-        OrderItems orderItems = orderItemsMapper.toEntity(orderItemDto);
-        orderItems.setCreatedAt(LocalDateTime.now());
-        orderItems.setCreatedBy(session.getAttribute("username").toString());
-        orderItems = orderItemRepository.save(orderItems);
-
+    public OrderItemDto getOrderItemById(Long orderItemId) {
+        OrderItems orderItems = orderItemRepository.findByOrderItemIdAndIsDeletedFalse(orderItemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order Item not found with item ID: " + orderItemId));
         return orderItemsMapper.toDTO(orderItems);
     }
 
     @Override
-    public OrderItemDto updateOrderItem(Long id, OrderItemDto orderItemdto) {
-        OrderItems existingOrderItem = orderItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found with order id : "+ id));
-        OrderItems updatedOrderItem = orderItemsMapper.toEntity(orderItemdto);
-        updatedOrderItem.setUpdatedAt(LocalDateTime.now());
-        updatedOrderItem.setUpdatedBy(session.getAttribute("username").toString());
+    @Transactional
+    public OrderItemDto createOrderItem(OrderItemDto orderItemDto) {
+        // Check if the Product exists or create a new Product
+        Product product = null;
+        if (orderItemDto.getProductId() != null) {
+            product = productRepository.findById(orderItemDto.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + orderItemDto.getProductId()));
+        } else if (orderItemDto.getProduct() != null) {
+            // Create the Product using ProductDto
+            ProductDto productDto = orderItemDto.getProduct();
+            product = new Product();
+            product.setProductName(productDto.getProductName());
+            product.setProductCategory(productDto.getProductCategory());
+            product.setStockQuantity(productDto.getStockQuantity());
+            product.setUom(productDto.getUom());
+            product.setPricePerUnit(productDto.getPricePerUnit());
+            product.setSpecification(productDto.getSpecification());
+            product = productRepository.save(product);  // Save the new product
+        }
 
-        return orderItemsMapper.toDTO(orderItemRepository.save(updatedOrderItem));
+        // Create the OrderItems entity and associate it with the Order and Product
+        OrderItems orderItems = orderItemsMapper.toEntity(orderItemDto);
+        orderItems.setProduct(product);
+        orderItems.setIsDeleted(false);
+
+        // Save the OrderItems entity
+        OrderItems savedOrderItem = orderItemRepository.save(orderItems);
+        return orderItemsMapper.toDTO(savedOrderItem);
     }
+
+
+    @Override
+    @Transactional
+    public List<OrderItemDto> createOrderItems(List<OrderItemDto> orderItemDtos) {
+        List<OrderItems> orderItemsList = orderItemDtos.stream()
+                .map(orderItemDto -> {
+                    // Handle each order item creation (similar to createOrderItem)
+                    Product product = null;
+                    if (orderItemDto.getProductId() != null) {
+                        product = productRepository.findById(orderItemDto.getProductId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + orderItemDto.getProductId()));
+                    } else if (orderItemDto.getProduct() != null) {
+                        // Create the Product using ProductDto
+                        ProductDto productDto = orderItemDto.getProduct();
+                        product = new Product();
+                        product.setProductName(productDto.getProductName());
+                        product.setProductCategory(productDto.getProductCategory());
+                        product.setStockQuantity(productDto.getStockQuantity());
+                        product.setUom(productDto.getUom());
+                        product.setPricePerUnit(productDto.getPricePerUnit());
+                        product.setSpecification(productDto.getSpecification());
+                        product = productRepository.save(product);
+                    }
+
+                    // Create the OrderItems entity
+                    OrderItems orderItems = orderItemsMapper.toEntity(orderItemDto);
+                    orderItems.setProduct(product);
+                    orderItems.setIsDeleted(false);
+
+                    return orderItems;
+                })
+                .collect(Collectors.toList());
+
+        // Save all OrderItems entities
+        List<OrderItems> savedOrderItems = orderItemRepository.saveAll(orderItemsList);
+        return savedOrderItems.stream()
+                .map(orderItemsMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public OrderItemDto updateOrderItem(Long orderItemId, OrderItemDto orderItemDto) {
+        OrderItems orderItems = orderItemRepository.findById(orderItemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order Item not found with item ID: " + orderItemId));
+
+        // Update OrderItem and Product if necessary
+        if (orderItemDto.getProductId() != null) {
+            Product product = productRepository.findById(orderItemDto.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + orderItemDto.getProductId()));
+            orderItems.setProduct(product);
+        }
+
+        // Map DTO to Entity and update the entity
+        orderItems = orderItemsMapper.updateEntityFromDTO(orderItemDto, orderItems);
+
+        // Save the updated OrderItem entity
+        orderItemRepository.save(orderItems);
+
+        // Return the updated OrderItem as a DTO
+        return orderItemsMapper.toDTO(orderItems);
+    }
+
 
     @Override
     public void deleteOrderItems(List<Long> ids) {
-        // Retrieve the list of orders by the given IDs
-        List<OrderItems> orderItems = orderItemRepository.findAllById(ids);
-
-        if (orderItems.isEmpty()) {
-            throw new CustomerNotFoundException("No orders found for the provided ids: " + ids);
-        }
-
-        // Soft delete the orders by calling the safeDeleteOrders method
-        orderItemRepository.safeDeleteOrderItems(ids);  // Assuming safeDeleteOrders performs soft delete logic
-
-        // Iterate over the list of orders to update the 'updatedAt' timestamp
-        for (OrderItems orderItem : orderItems) {
-            orderItem.setUpdatedAt(LocalDateTime.now());
-            orderItemRepository.save(orderItem);  // Save the updated timestamp (if required by your logic)
-        }
+        orderItemRepository.safeDeleteOrderItems(ids);
     }
 
-
     @Override
-    public void deleteOrderItem(Long id) {
-        OrderItems orderItem = orderItemRepository.findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id : " + id));
-
-        orderItemRepository.safeDeleteOrderItem(id); // Soft delete the order
-        orderItem.setUpdatedAt(LocalDateTime.now());
-        orderItemRepository.save(orderItem);
-
+    public void deleteOrderItem(Long orderItemId) {
+        orderItemRepository.safeDeleteOrderItem(orderItemId);
     }
 }

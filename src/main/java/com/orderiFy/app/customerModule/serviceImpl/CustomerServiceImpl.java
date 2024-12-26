@@ -1,6 +1,5 @@
 package com.orderiFy.app.customerModule.serviceImpl;
 
-
 import com.orderiFy.app.customerModule.dto.CustomerDto;
 import com.orderiFy.app.customerModule.entity.Customer;
 import com.orderiFy.app.customerModule.exceptions.CustomerNotFoundException;
@@ -14,13 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
+
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
@@ -32,80 +30,62 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDto createCustomer(CustomerDto dto) {
-        Customer customer = customerMapper.toEntity(dto);
-
+        Customer customer = customerMapper.toEntity(dto); // Use instance method
+        customer.setCreatedAt(LocalDateTime.now());
         Customer savedCustomer = customerRepository.save(customer);
-
-        return customerMapper.toDTO(savedCustomer);
+        return customerMapper.toDTO(savedCustomer); // Use instance method
     }
 
     @Override
     public CustomerDto getCustomerById(Long id) {
         return customerRepository.findByCustomerIdAndIsDeletedFalse(id)
-                .map(customerMapper::toDTO)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id : " + id));
+                .map(customerMapper::toDTO) // Use instance method
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + id));
     }
 
     @Override
     public List<CustomerDto> getAllCustomers() {
         return customerRepository.findByIsDeletedFalse().stream()
-                .map(customerMapper::toDTO)
+                .map(customerMapper::toDTO) // Use instance method
                 .toList();
     }
 
     @Override
     public CustomerDto updateCustomer(Long id, CustomerDto dto) {
-        try {
-            Customer existingCustomer = customerRepository.findById(id)
-                    .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id : "+ id ));
+        Customer existingCustomer = customerRepository.findByCustomerIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + id));
 
-            // update customer details
-            existingCustomer.setCustomerName(dto.getCustomerName());
-            existingCustomer.setPhoneNumber(dto.getPhoneNumber());
-            existingCustomer.setEmail(dto.getEmail());
-            existingCustomer.setAddress(dto.getAddress());
+        // Update customer details
+        existingCustomer.setCustomerName(dto.getCustomerName());
+        existingCustomer.setPhoneNumber(dto.getPhoneNumber());
+        existingCustomer.setEmail(dto.getEmail());
+        existingCustomer.setAddress(dto.getAddress());
+        existingCustomer.setDob(dto.getDob());
+        existingCustomer.setUpdatedAt(LocalDateTime.now());
 
-            return customerMapper.toDTO(customerRepository.save(existingCustomer));
-        } catch (Exception e) {
-            throw new RuntimeException("Error updating customer", e);
-        }
+        Customer updatedCustomer = customerRepository.save(existingCustomer);
+        return customerMapper.toDTO(updatedCustomer); // Use instance method
     }
-
 
     @Override
     public void deleteCustomer(Long id) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id : " + id));
+        Customer customer = customerRepository.findByCustomerIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + id));
 
-        customerRepository.safeDeleteCustomer(id); // Soft delete the customer
+        customer.setDeleted(true); // Corrected setter method
         customer.setUpdatedAt(LocalDateTime.now());
-        customerRepository.save(customer); // Save the updated entity
+        customerRepository.save(customer); // Save the updated entity for a soft delete
     }
-
-
-
 
     @Override
     public Page<CustomerDto> getPaginatedCustomers(String keyword, int page, int size, String sortBy, String sortDir) {
-        // If keyword is null or empty, pass null to the repository method
-        if (keyword != null || keyword.trim().isEmpty()) {
-            keyword = "";
-        }
-
         Sort sort = (sortDir != null && sortDir.equalsIgnoreCase("desc"))
                 ? Sort.by(sortBy).descending()
                 : Sort.by(sortBy).ascending();
 
-        // Create pageable object
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<Customer> customerPage = customerRepository.findAllCustomers(keyword, pageable);
-
-        return customerPage.map(customerMapper::toDTO);
+        return customerPage.map(customerMapper::toDTO); // Use instance method
     }
-
-
 }
-
-
-

@@ -15,6 +15,7 @@
     import java.util.Map;
     import java.util.Optional;
 
+
     @RestController
     @RequestMapping("/api/customers")
     public class CustomerController {
@@ -50,28 +51,27 @@
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-
-
-        @GetMapping("/")
-        public List<CustomerDto> getAllCustomers(){
-            return    customerService.getAllCustomers();
-
+        @GetMapping
+        public List<CustomerDto> getAllCustomers() {
+            return customerService.getAllCustomers();
         }
 
         @GetMapping("/{id}")
-        public ResponseEntity<CustomerDto> getCustomerById(@PathVariable Long id) {
+        public ResponseEntity<Map<String, Object>> getCustomerById(@PathVariable Long id) {
             CustomerDto customer = customerService.getCustomerById(id);
-            return new ResponseEntity<>(customer, HttpStatus.OK);
+            Map<String, Object> response = new HashMap<>();
+            response.put("customer", customer);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        @PostMapping("/")
-        public ResponseEntity<CustomerDto> createCustomer(@RequestBody CustomerDto customerDto) {
+        @PostMapping
+        public ResponseEntity<CustomerDto> createCustomer( @RequestBody CustomerDto customerDto) {
             CustomerDto savedCustomer = customerService.createCustomer(customerDto);
             return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
         }
 
         @PutMapping("/{id}")
-        public ResponseEntity<CustomerDto> updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
+        public ResponseEntity<CustomerDto> updateCustomer(@PathVariable Long id,  @RequestBody CustomerDto customerDto) {
             CustomerDto updatedCustomer = customerService.updateCustomer(id, customerDto);
             return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
         }
@@ -81,8 +81,6 @@
             customerService.deleteCustomer(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-
-
 
         @ExceptionHandler(CustomerNotFoundException.class)
         public ResponseEntity<String> handleCustomerNotFoundException(CustomerNotFoundException ex) {

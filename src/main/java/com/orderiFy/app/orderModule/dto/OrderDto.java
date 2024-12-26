@@ -1,41 +1,44 @@
-  package com.orderiFy.app.orderModule.dto;
+package com.orderiFy.app.orderModule.dto;
 
-  import com.fasterxml.jackson.annotation.JsonFormat;
-  import com.orderiFy.app.customerModule.entity.Customer;
-  import com.orderiFy.app.framework.util.Enums;
-  import jakarta.persistence.EnumType;
-  import jakarta.persistence.Enumerated;
-  import lombok.Data;
-  import lombok.Getter;
-  import lombok.Setter;
-  import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.orderiFy.app.framework.util.Enums;
+import lombok.Data;
 
-  import java.time.LocalDate;
-  import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 
-  @Data // Lombok will generate getters, setters, toString, equals, and hashCode methods
-  public class OrderDto {
 
-    private Long customerId; // To hold customerId
-    private String customerName; // To hold customerName
-    private String orderNumber;
-    private Long orderTakenByUserId;
-    private String orderTakenByUsername;
-    private Double totalAmount;
+@Data
+public class OrderDto {
+  private Long orderId;
+  private Long customerId;
+  private String customerName;
+  private String orderNumber;
+  private Long orderTakenByUserId;
+  private String orderTakenByUsername;
+  private Double totalAmount;
+  private Enums.OrderPriority orderPriority;
+  private Enums.OrderStatus orderStatus;
+  private Boolean isDeleted;
 
+  @JsonFormat(pattern = "dd-MM-yyyy")
+  private LocalDate dueDate;
 
-    @Getter
-    @Setter
-    @Enumerated(EnumType.STRING) // Not necessary for DTO, only for entity
-    private Enums.OrderPriority orderPriority;
+  @JsonFormat(pattern = "dd-MM-yyyy")
+  private LocalDate orderTakenDate;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate dueDate;
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+  private LocalDateTime createdAt;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate orderTakenDate;
-  }
+  private Long createdBy;
 
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+  private LocalDateTime updatedAt;
 
+  private Long updatedBy;
+
+  private List<OrderItemDto> orderItems;
+}
 
