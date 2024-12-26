@@ -19,9 +19,9 @@ public class OrderDto {
   private Long orderTakenByUserId;
   private String orderTakenByUsername;
   private Double totalAmount;
-  private Enums.OrderPriority orderPriority;
-  private Enums.OrderStatus orderStatus;
-  private Boolean isDeleted;
+  private Enums.OrderPriority orderPriority= Enums.OrderPriority.LOW;
+  private Enums.OrderStatus orderStatus= Enums.OrderStatus.NEW;
+  private Boolean isDeleted=false;
 
   @JsonFormat(pattern = "dd-MM-yyyy")
   private LocalDate dueDate;

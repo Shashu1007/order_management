@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Data
 public class OrderItemDto {
     private Long orderItemId;
+
     private Long orderId;
 
     private Long productId; // Product ID (could be kept if needed for backend or database purposes)
@@ -20,6 +21,7 @@ public class OrderItemDto {
     private ProductDto product; // New field for ProductDto containing detailed product information
 
     private String productName; // Product name for display (could be derived from ProductDto)
+
     private int quantity;
 
     @Enumerated(value = EnumType.STRING)
@@ -32,8 +34,10 @@ public class OrderItemDto {
     private Boolean isDeleted = false;
 
     private LocalDateTime createdAt;
+
     private String createdBy;
 
     private LocalDateTime updatedAt;
+
     private String updatedBy;
 }

@@ -64,14 +64,15 @@ public class Order {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
+    @LastModifiedDate
     @Column(name = "order_taken_date")
-    private LocalDate orderTakenDate;
+    private LocalDate orderTakenDate=LocalDate.now();
 
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt ;
 
     @CreatedBy
     @Column(name = "created_by")

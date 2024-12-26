@@ -36,7 +36,7 @@ public class OrderController {
 
 
 
-    @PostMapping("/createOrder")
+    @PostMapping("/")
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto orderDto) {
         // Create the order and order items dynamically in the service
         OrderDto savedOrder = orderService.createOrder(orderDto);
@@ -54,12 +54,13 @@ public class OrderController {
 
     @GetMapping("/")
     public ResponseEntity<Map<String, Object>> getAll(
+            @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "orderNumber") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
 
-        Page<OrderDto> orderPage = orderService.findAllOrders(page, size, sortBy, sortDir);
+        Page<OrderDto> orderPage = orderService.findAllOrders( keyword,page, size, sortBy, sortDir);
 
         Map<String, Object> response = new HashMap<>();
         response.put("orders", orderPage.getContent());
@@ -82,7 +83,11 @@ public class OrderController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "orderNumber") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
-
+        if (keyword == null || keyword.trim().isEmpty()) {
+            keyword = "";
+        } else {
+            keyword = keyword.trim();
+        }
         Page<OrderDto> orderPage = orderService.getAllOrders(keyword, page, size, sortBy, sortDir);
 
         Map<String, Object> response = new HashMap<>();
