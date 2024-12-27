@@ -40,5 +40,8 @@ public class OrderDto {
   private Long updatedBy;
 
   private List<OrderItemDto> orderItems;
+
+  private String message;
+
 }
 

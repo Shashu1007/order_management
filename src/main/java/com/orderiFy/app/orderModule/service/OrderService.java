@@ -2,6 +2,7 @@ package com.orderiFy.app.orderModule.service;
 
 import com.orderiFy.app.orderModule.dto.OrderDto;
 import com.orderiFy.app.orderModule.entity.Order;
+import com.orderiFy.app.orderModule.entity.OrderItems;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +25,8 @@ public interface OrderService {
 
     void deleteOrders(List<Long> ids);
 
-    Page<OrderDto> findAllOrders(String keyword, int page, int size, String sortBy, String sortDir);
+
+    List<OrderDto> findAllOrders();
 
     OrderDto getOrderByIdAndIsDeletedFalse(long id);
 }

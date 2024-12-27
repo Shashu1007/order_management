@@ -52,27 +52,29 @@ public class OrderController {
     }
 
 
-    @GetMapping("/")
-    public ResponseEntity<Map<String, Object>> getAll(
-            @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "orderNumber") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir) {
 
-        Page<OrderDto> orderPage = orderService.findAllOrders( keyword,page, size, sortBy, sortDir);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("orders", orderPage.getContent());
-        response.put("currentPage", orderPage.getNumber());
-        response.put("totalItems", orderPage.getTotalElements());
-        response.put("totalPages", orderPage.getTotalPages());
-        response.put("sortBy", sortBy);
-        response.put("sortDir", sortDir);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
+//    @GetMapping("/")
+//    public ResponseEntity<Map<String, Object>> getAll(
+//            @RequestParam(defaultValue = "") String keyword,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "orderNumber") String sortBy,
+//            @RequestParam(defaultValue = "asc") String sortDir) {
+//
+//        Page<OrderDto> orderPage = orderService.findAllOrders( keyword,page, size, sortBy, sortDir);
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("orders", orderPage.getContent());
+//        response.put("currentPage", orderPage.getNumber());
+//        response.put("totalItems", orderPage.getTotalElements());
+//        response.put("totalPages", orderPage.getTotalPages());
+//        response.put("sortBy", sortBy);
+//        response.put("sortDir", sortDir);
+//
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
+//
 
 
 
@@ -119,8 +121,11 @@ public class OrderController {
 
     @DeleteMapping("/")
     public void deleteOrders(@RequestBody List<Long> ids) {
+        System.out.println("Received IDs: " + ids); // Debug log
+
         orderService.deleteOrders(ids);
     }
+
 
 
 

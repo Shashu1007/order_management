@@ -50,9 +50,9 @@ public class ProductController {
     }
 
     // Get all products
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<ProductDto>> getAllProducts() {
-        List<ProductDto> products = productService.getAllProducts();
+        List<ProductDto> products = productService.findAllProducts();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
@@ -82,6 +82,11 @@ public class ProductController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
+    }
+
+    @DeleteMapping("/")
+    public void deleteProducts(@RequestBody List<Long> ids){
+        productService.deleteProducts(ids);
     }
 
     // Handle product not found exception

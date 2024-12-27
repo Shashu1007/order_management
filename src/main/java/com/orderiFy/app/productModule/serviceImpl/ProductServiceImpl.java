@@ -27,13 +27,7 @@ public class ProductServiceImpl implements ProductService {
         this.productMapper = productMapper;
     }
 
-    @Override
-    public List<ProductDto> getAllProducts() {
-        return productRepository.findAll()
-                .stream()
-                .map(productMapper::toDto)
-                .collect(Collectors.toList());
-    }
+
 
     @Override
     public ProductDto getProductById(Long id) {
@@ -75,11 +69,32 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
     }
 
+
+    @Override
+    public void deleteProducts(List<Long> ids) {
+        if (ids.isEmpty()) {
+            throw new RuntimeException("Product IDs cannot be empty.");
+        }
+
+        productRepository.safeDeleteProducts(ids);
+    }
+
+
     @Override
     public Page<ProductDto> getPaginatedProducts(String keyword, int page, int size, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Product> productPage = productRepository.findAllProducts(keyword, pageable);
         return productPage.map(productMapper::toDto);
+    }
+
+    @Override
+    public List<ProductDto> findAllProducts() {
+        List<Product> products = productRepository.findAllProducts() ;
+        return products.stream()
+                .map(productMapper::toDto)
+                .collect(Collectors.toList());
+
+
     }
 }

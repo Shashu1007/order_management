@@ -23,5 +23,9 @@ public interface    OrderItemService {
     void deleteOrderItems(List<Long> ids);
 
 
+    List<OrderItemDto> updateOrderItems(List<Long> orderITemIds , List<OrderItemDto> orderItemDtos);
+
+    void removeOrderItem(Long orderItemId);
+
     void deleteOrderItem(Long orderItemId);
 }

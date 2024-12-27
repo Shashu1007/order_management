@@ -2,7 +2,6 @@ package com.orderiFy.app.orderModule.serviceImpl;
 
 import com.orderiFy.app.exception.ResourceNotFoundException;
 import com.orderiFy.app.orderModule.dto.OrderItemDto;
-import com.orderiFy.app.orderModule.entity.Order;
 import com.orderiFy.app.orderModule.entity.OrderItems;
 import com.orderiFy.app.productModule.dto.ProductDto;
 import com.orderiFy.app.productModule.entity.Product;
@@ -11,10 +10,12 @@ import com.orderiFy.app.orderModule.mappers.OrderItemsMapper;
 import com.orderiFy.app.orderModule.repository.OrderItemRepository;
 import com.orderiFy.app.orderModule.repository.OrderRepository;
 import com.orderiFy.app.orderModule.service.OrderItemService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -150,6 +151,56 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Override
     public void deleteOrderItems(List<Long> ids) {
         orderItemRepository.safeDeleteOrderItems(ids);
+    }
+
+    @Transactional
+    @Override
+    public List<OrderItemDto> updateOrderItems(List<Long> orderItemIds, List<OrderItemDto> orderItemDtos) {
+        // Ensure the lists have the same size, otherwise handle it as an error
+        if (orderItemIds.size() != orderItemDtos.size()) {
+            throw new IllegalArgumentException("The number of order item IDs does not match the number of DTOs provided.");
+        }
+
+        // Create a list to hold the updated DTOs
+        List<OrderItemDto> updatedOrderItems = new ArrayList<>();
+
+        // Iterate through each order item ID and corresponding DTO
+        for (int i = 0; i < orderItemIds.size(); i++) {
+            Long orderItemId = orderItemIds.get(i);
+            OrderItemDto orderItemDto = orderItemDtos.get(i);
+
+            // Find the existing OrderItem by its ID
+            OrderItems orderItems = orderItemRepository.findById(orderItemId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Order Item not found with item ID: " + orderItemId));
+
+            // Update OrderItem and Product if necessary
+            if (orderItemDto.getProductId() != null) {
+                Product product = productRepository.findById(orderItemDto.getProductId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + orderItemDto.getProductId()));
+                orderItems.setProduct(product);
+            }
+
+            // Map DTO to Entity and update the entity
+            orderItems = orderItemsMapper.updateEntityFromDTO(orderItemDto, orderItems);
+
+            // Save the updated OrderItem entity
+            orderItemRepository.save(orderItems);
+
+            // Convert the updated OrderItem entity to DTO and add it to the list
+            OrderItemDto updatedOrderItemDto = orderItemsMapper.toDTO(orderItems);
+            updatedOrderItems.add(updatedOrderItemDto);
+        }
+
+        // Return the list of updated OrderItem DTOs
+        return updatedOrderItems;
+    }
+
+    @Override
+    public void removeOrderItem(Long orderItemId) {
+        OrderItems item = orderItemRepository.findById(orderItemId)
+                .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+        item.setOrder(null);  // Disconnect item from order
+        orderItemRepository.delete(item);  // Delete item from database
     }
 
     @Override

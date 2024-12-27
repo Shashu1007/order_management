@@ -35,10 +35,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     //safe delete multiple orders
     @Modifying
     @Transactional
-    @Query("UPDATE Order c SET c.isDeleted = true WHERE c.orderId = :orderId")
-    void safeDeleteOrders(@Param("orderId")List<Long> ids);
-
-
+    @Query("UPDATE Order o SET o.isDeleted = true WHERE o.orderId IN :ids")
+    void safeDeleteOrders(@Param("ids") List<Long> ids);
 
     //working properly for these fields
 
@@ -63,5 +61,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 
     @Query("SELECT o from Order o Where o.isDeleted = false ")
-    Page<Order> findAllOrders(Pageable pageable);
+    List<Order> findAllOrders();
 }

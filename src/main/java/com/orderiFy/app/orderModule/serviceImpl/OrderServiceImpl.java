@@ -116,19 +116,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderDto> findAllOrders(String keyword, int page, int size, String sortBy, String sortDir) {
-        logger.info("Fetching all orders with keyword: {}, page: {}, size: {}, sortBy: {}, sortDir: {}", keyword, page, size, sortBy, sortDir);
+    public List<OrderDto> findAllOrders() {
+        logger.info("Fetching all orders");
 
-        Sort sort = Sort.by(Sort.Order.asc(sortBy));
-        if ("desc".equalsIgnoreCase(sortDir)) {
-            sort = Sort.by(Sort.Order.desc(sortBy));
-        }
 
-        PageRequest pageRequest = PageRequest.of(page, size, sort);
-        Page<Order> orders = orderRepository.findAll(pageRequest);
-        logger.info("Fetched {} orders", orders.getTotalElements());  // Log the number of orders fetched
 
-        return orders.map(orderMapper::toDTO);
+        List<Order> orders = orderRepository.findAllOrders();
+
+        return orders.stream().map(orderMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override

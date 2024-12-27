@@ -54,6 +54,7 @@ public class OrderMapper {
                     .map(orderItemsMapper::toDTO)
                     .collect(Collectors.toList()));
         }
+        dto.setMessage(order.getMessage());
 
         return dto;
     }
@@ -95,6 +96,8 @@ public class OrderMapper {
                     .map(orderItemsMapper::toEntity)
                     .collect(Collectors.toList()));
         }
+
+        order.setMessage(dto.getMessage());
 
         return order;
     }
@@ -138,6 +141,8 @@ public class OrderMapper {
                     .map(orderItemsMapper::toEntity)
                     .collect(Collectors.toList()));
         }
+
+        entity.setMessage(dto.getMessage());
     }
     // In OrderMapper class
     public Order updateEntityFromDTO(OrderDto dto, Order entity) {
@@ -178,6 +183,7 @@ public class OrderMapper {
                     .map(orderItemsMapper::toEntity)
                     .collect(Collectors.toList()));
         }
+        entity.setMessage(dto.getMessage());
 
         return entity; // Return the updated entity
     }

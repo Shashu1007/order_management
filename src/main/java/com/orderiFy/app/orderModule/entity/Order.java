@@ -34,11 +34,11 @@ public class Order {
     private Long orderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
 
-    @Column(name = "order_number")
+    @Column(name = "order_number" ,unique = true)
     private String orderNumber;
 
     @Column(name = "order_taken_by_user_id")
@@ -66,13 +66,13 @@ public class Order {
 
     @LastModifiedDate
     @Column(name = "order_taken_date")
-    private LocalDate orderTakenDate=LocalDate.now();
+    private LocalDate orderTakenDate = LocalDate.now();
 
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt ;
+    private LocalDateTime createdAt;
 
     @CreatedBy
     @Column(name = "created_by")
@@ -90,4 +90,14 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItems> orderItems;
+
+    public void removeOrderItem(OrderItems item) {
+        orderItems.remove(item);
+        item.setOrder(null);
+    }
+
+
+    @Column(name = "message")
+    private String message;
 }
+

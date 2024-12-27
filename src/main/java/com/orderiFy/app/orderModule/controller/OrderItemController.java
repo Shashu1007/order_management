@@ -2,7 +2,11 @@ package com.orderiFy.app.orderModule.controller;
 
 import com.orderiFy.app.orderModule.dto.OrderItemDto;
 import com.orderiFy.app.orderModule.service.OrderItemService;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,14 +44,44 @@ public class OrderItemController {
     }
 
     @PostMapping("/batch")
-    public List<OrderItemDto> createOrderItems(@RequestBody List<OrderItemDto> orderItemDtos) {
-        return orderItemService.createOrderItems(orderItemDtos);
+    public ResponseEntity<?> saveOrderItems(@RequestBody List<OrderItemDto> orderItems) {
+        for (OrderItemDto orderItemDto : orderItems) {
+            if (orderItemDto.getOrderId() == null) {
+                return ResponseEntity.badRequest().body("Order ID is required.");
+            }
+            // save logic here, for example:
+            orderItemService.createOrderItem(orderItemDto);
+        }
+        return ResponseEntity.ok("Order items saved successfully!");
     }
 
-    @PutMapping("/{orderItemId}")
+
+    @PutMapping("/{orderId}")
     public OrderItemDto updateOrderItem(@PathVariable Long orderItemId, @RequestBody OrderItemDto orderItemDto) {
         return orderItemService.updateOrderItem(orderItemId, orderItemDto);
     }
+
+    @PutMapping("/{orderId}/batch")
+    public List<OrderItemDto> updateOrderItems(@RequestBody UpdateOrderItemsRequest request) {
+        return orderItemService.updateOrderItems(request.getOrderItemIds(), request.getOrderItemDtos());
+    }
+
+    @DeleteMapping("/delete/{orderItemId}")
+    public ResponseEntity<String> removeOrderItem(@PathVariable Long orderItemId) {
+        try {
+            orderItemService.removeOrderItem(orderItemId);
+            return ResponseEntity.ok("Order item removed successfully.");
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+    @Data
+    public static class UpdateOrderItemsRequest {
+        private List<Long> orderItemIds;
+        private List<OrderItemDto> orderItemDtos;
+
+    }
+
 
     @DeleteMapping("/{orderItemId}")
     public void deleteOrderItem(@PathVariable Long orderItemId) {

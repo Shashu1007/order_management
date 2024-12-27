@@ -10,7 +10,8 @@ import java.util.List;
 @Service
 public interface ProductService {
 
-    List<ProductDto> getAllProducts();
+
+
 
     ProductDto getProductById(Long id);
 
@@ -20,6 +21,9 @@ public interface ProductService {
 
     void deleteProduct(Long id);
 
+    void deleteProducts(List<Long> ids);
+
     Page<ProductDto> getPaginatedProducts(String keyword, int page, int size, String sortBy, String sortDir) ;
 
+    List<ProductDto> findAllProducts();
 }

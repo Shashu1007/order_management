@@ -51,10 +51,18 @@
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        @GetMapping
+        @GetMapping("/all")
         public List<CustomerDto> getAllCustomers() {
             return customerService.getAllCustomers();
         }
+
+
+
+
+
+
+
+
 
         @GetMapping("/{id}")
         public ResponseEntity<Map<String, Object>> getCustomerById(@PathVariable Long id) {
@@ -79,6 +87,12 @@
         @DeleteMapping("/{id}")
         public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
             customerService.deleteCustomer(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        @DeleteMapping("/")
+        public ResponseEntity<Void> deleteCustomers(@RequestBody List<Long> ids) {
+            customerService.deleteCustomers(ids);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 

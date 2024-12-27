@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -47,7 +48,7 @@ public class CustomerServiceImpl implements CustomerService {
     public List<CustomerDto> getAllCustomers() {
         return customerRepository.findByIsDeletedFalse().stream()
                 .map(customerMapper::toDTO) // Use instance method
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -67,15 +68,25 @@ public class CustomerServiceImpl implements CustomerService {
         return customerMapper.toDTO(updatedCustomer); // Use instance method
     }
 
+
+
+    @Override
+    public void deleteCustomers(List<Long> ids) {
+        if (ids.isEmpty()) {
+            throw new RuntimeException("Product IDs cannot be empty.");
+        }
+
+        customerRepository.safeDeleteCustomers(ids);
+    }
+
     @Override
     public void deleteCustomer(Long id) {
-        Customer customer = customerRepository.findByCustomerIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + id));
 
-        customer.setDeleted(true); // Corrected setter method
-        customer.setUpdatedAt(LocalDateTime.now());
-        customerRepository.save(customer); // Save the updated entity for a soft delete
+
+        customerRepository.safeDeleteCustomer(id);
     }
+
+
 
     @Override
     public Page<CustomerDto> getPaginatedCustomers(String keyword, int page, int size, String sortBy, String sortDir) {
